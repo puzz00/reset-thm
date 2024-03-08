@@ -1,4 +1,4 @@
-The [reset](https://tryhackme.com/room/resetui) is a great active directory box found on [thm](https://tryhackme.com) We get to mess about in an active directory environment and there is a fun watering hole attack to be found, too... :smiling_imp: 
+The [reset](https://tryhackme.com/room/resetui) box is a great active directory room found on [thm](https://tryhackme.com) We get to mess about in an active directory environment and there is a fun watering hole attack to be found, too... :smiling_imp: 
 
 ## port scanning
 
@@ -52,3 +52,60 @@ We have a look into the *Data* share and find two pdf files along with a txt fil
 ---
 
 ## bruteforcing usernames
+
+We can use *crackmapexec* to brute force user names since we have read access to the IPC$ share as an anonymous user.
+
+`sudo crackmapexec smb 10.10.152.174 -u 'guest' -d thm.local -p '' --rid-brute`
+
+![usernames1](/images/4.png)
+
+![usernames2](/images/5.png)
+
+We can also use the *impacket* tool called *lookupsid.py* We can use bash commands with this tool to create a list of usernames.
+
+`sudo python3 lookupsid.py THM.corp/guest@10.10.181.19 | grep -i 'SidTypeUser' | cut -d '\' -f 2 | awk {'print $1'} > usernames.txt`
+
+![usernames3](/images/8b.png)
+
+![usernames4](/images/8c.png)
+
+Before launching a brute force attack, it makes sense to try and enumerate the password policy since we do not want to lock out accounts. In this case, we could not do so, but it is still worth trying as older servers are vulnerable to this kind of enumeration.
+
+`sudo crackmapexec smb 10.10.152.174 -u 'guest' -p '' --pass-pol`
+
+As we can't find out anything about the password policy in place, it makes sense to use a password spraying attack rather than a traditional brute force :hammer: so we run less chance of locking accounts.
+
+> [!IMPORTANT]
+> Password spraying is where we use one password against lots of different accounts
+
+`sudo crackmapexec smb 10.10.181.19 -u usernames.txt -p 'ResetMe123!'`
+
+![usernames5](/images/9.png)
+
+![usernames6](/images/10.png)
+
+The valid credentials which we have obtained for the LILY_ONEILL user do not give us access to the target machine :lock: so we need to think of a different way to hack it... 🤔 
+
+---
+
+## as-rep roasting
+
+Thinking again, we come up with an as~~s~~-rep roasting attack. This type of attack takes advantage of the fact that anybody can request a ticket granting ticket :ticket: from the key distribution center for a user account if that account has kerberos pre-authentication disabled. This might seem :zany_face: but it is somethimes necessary - for example if a user needs to access an app which does not support kerberos pre-authentication. Ths useful thing is that a ticket granting ticket is encrypted :key: using a key derived from the user's password. This means that once we have a tgt for a user, we also have a hash to crack which if cracked will give us the user's plaintext password :ghost:
+
+In this case, we receive three hashes and manage to crack one of them.
+
+`sudo python3 GetNPUsers.py THM.corp/ -dc-ip 10.10.152.174 -usersfile usernames.txt -no-pass -request -outputfile hashes.txt`
+
+![asrep1](/images/11.png)
+
+![asrep2](/images/12.png)
+
+`sudo hashcat -a 0 -m 18200 --potfile-path=reset.pot hashes.txt rockyou.txt -O`
+
+![asrep3](/images/13.png)
+
+`sudo hashcat -a 0 -m 18200 --potfile-path=reset.pot hashes.txt rockyou.txt -O --show`
+
+![asrep4](/images/14.png)
+
+The valid credentials which we discover for the user account TABATHA_BRITT do not give us access to the target machine, either :no_entry: 
