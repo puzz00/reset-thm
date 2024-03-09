@@ -109,3 +109,30 @@ In this case, we receive three hashes and manage to crack one of them.
 ![asrep4](/images/14.png)
 
 The valid credentials which we discover for the user account TABATHA_BRITT do not give us access to the target machine, either :no_entry: 
+
+---
+
+## bloodhound enumeration
+
+We turn to bloodhound since we have found nothing but :door:
+
+After loading *neo4j* and *bloodhound* we can use an ingestor to enumerate the domain further. We can use the creds we have found for TABATHA_BRITT with the ingestor.
+
+`sudo bloodhound-python -d THM.corp -u 'TABATHA_BRITT' -p '<REDACTED>' -ns 10.10.152.174 -c all`
+
+![bloodhound1](/images/15.png)
+
+Once we have obtained the data, we upload it to bloodhound and start to analyze it.
+
+![bloodhound2](/images/16.png)
+
+When we look under *Transitive Object Control* under *Node Info* for the TABATHA_BRITT node, we see some interesting active directory rights.
+
+![bloodhound3](/images/17.png)
+
+![bloodhound4](/images/18.png)
+
+---
+
+### active directory rights
+
