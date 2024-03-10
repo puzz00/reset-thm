@@ -146,7 +146,12 @@ Essentialy, we will be abusing active directory rights. It is always useful when
 
 Bloodhound is a great tool to use to enumerate active directory rights, but it can be done manually using powershell commands if an initial shell has been obtained.
 
-This is one of the best parts of active directory for an attacker :vampire: - lots of useful domain data can be enumerated even by a low privileged user. When attacking active directory, we tend to be looking more for misconfiguration of its own functionality than exploits of code. Misconfiguration is not surprising when we consider that active directory is used to manage large collections of assets and humans :zany_face: are involved in said management.
+This is one of the best parts of active directory for an attacker :vampire: - lots of useful domain data can be enumerated even by a low privileged user.
+
+>[!TIP]
+>When attacking active directory, we tend to be looking more for misconfiguration of its own functionality than exploits of code
+
+Misconfiguration is not surprising when we consider that active directory is used to manage large collections of assets and humans :zany_face: are involved in said management.
 
 ---
 
