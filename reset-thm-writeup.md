@@ -136,3 +136,19 @@ When we look under *Transitive Object Control* under *Node Info* for the TABATHA
 
 ### active directory rights
 
+The pictures from bloodhound show us that TABATHA_BRITT has the *GenericAll* right over SHAWNA_BRAY. This right will (amongst other things :stuck_out_tongue:) let TABATHA_BRITT change the password for SHAWNA_BRAY. This is of interest to us because we have pwned TABATHA_BRITT and therefore be able to use their credentials to pwn SHAWNA_BRAY by changing their password :lock: to be under our control :unlock:
+
+Moving on, SHAWNA_BRAY has the ExtendedRight to ForceChangePassword over CRUZ_HALL. This is self-explanatory and will allow us to pwn CRUZ_HALL.
+
+Next in the attack :chains: we see that CRUZ_HALL has the GenericWrite right (write right :confused:) over DARLA_WINTERS. This right will let us change the password for DARLA_WINTERS.
+
+Essentialy, we will be abusing active directory rights. It is always useful when attacking active directory environments to look for these rights (along with several others) as they can enable us to move laterally :arrow_left: :arrow_right: and even sometimes vertically :arrow_up:
+
+Bloodhound is a great tool to use to enumerate active directory rights, but it can be done manually using powershell commands if an initial shell has been obtained.
+
+This is one of the best parts of active directory for an attacker :vampire: - lots of useful domain data can be enumerated even by a low privileged user. When attacking active directory, we tend to be looking more for misconfiguration of its own functionality than exploits of code. Misconfiguration is not surprising when we consider that active directory is used to manage large collections of assets and humans :zany_face: are involved in said management.
+
+---
+
+## constrained delegation
+
