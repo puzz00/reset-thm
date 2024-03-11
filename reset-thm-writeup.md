@@ -167,7 +167,7 @@ It is possible in active directory to give objects the ability to delegate to se
 
 The picture below shows how we can use *Active Directory Users and Computers* on a domain controller to allow objects to delegate to services as others.
 
-![cd3](/images/21.png)
+![cd3](/images/49.png)
 
 ---
 
