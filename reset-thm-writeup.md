@@ -157,3 +157,19 @@ Misconfiguration is not surprising when we consider that active directory is use
 
 ## constrained delegation
 
+Moving on, we need to look at DARLA_WINTERS - is there anything special about this object? It turns out that yes there is - DARLA_WINTERS has the ability to delegate via *constrained delegation*.
+
+![cd1](/images/19.png)
+
+![cd2](/images/20.png)
+
+It is possible in active directory to give objects the ability to delegate to services as different users :disguised_face: This means that DARLA_WINTERS can impersonate other users (including domain admins) when authenticating to *cifs* on the haystack machine. This is good news for us :thumbsup: because it means that once we have pwned DARLA_WINTERS via the password resets we can use constrained delegation to authenticate to haystack.thm.corp as a domain admin account and thereby pwn the domain controller :partying_face:
+
+The picture below shows how we can use *Active Directory Users and Computers* on a domain controller to allow objects to delegate to services as others.
+
+![cd3](/images/21.png)
+
+---
+
+## password resets
+
