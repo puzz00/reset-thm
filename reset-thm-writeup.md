@@ -231,3 +231,19 @@ But the party is not over yet... 😈
 
 ## the automate user
 
+It occured to me at this point that I had obtained the system flag before the user flag and that seemed odd. With a little more enumeration, I found a user called *automate*
+
+![automate1](/images/27.png)
+
+![automate1](/images/28.png)
+
+We need to rethink 🤔 this machine and go back to the beginning :arrow_backward: We will work on the premise that we have not pwned a thing and we want to gain a shell somehow. This time, we think back to the write access we have to the *Data* share. Up until now, that had not seemed of any use since even though we could (probably :stuck_out_tongue:) upload a malicious file to it we wouldn't be able to trigger it...
+
+...that *automate* name gets us thinking...
+
+...sometimes there are automated users on labs which trigger events for us. This is great as it helps us practise social engineering :brain: attacks.
+
+---
+
+## watering hole attack
+
