@@ -319,3 +319,29 @@ It didn't take long before lo and behold :trumpet: :trumpet: :trumpet: an *ntlmv
 
 ## cracking the automate hash
 
+We can use the hashcat mode of *5600* to try and crack *ntlmv2* hashes.
+
+`sudo hashcat -a 0 -m 5600 --potfile-path=auto.pot autohash.txt rockyou.txt -O`
+
+![wh7](/images/35.png)
+
+We crack the hash and can see a cleaner output using:
+
+`sudo hashcat -a 0 -m 5600 --potfile-path=auto.pot autohash.txt rockyou.txt -O --show`
+
+![wh8](/images/36.png)
+
+---
+
+## evilwinrm
+
+Remembering that *winrm* is running on the machine, we can try the cracked hash with *evilwinrm* to see if we can get a shell. It is always worth trying this with any credentials we obtain because people often use the same passwords for different services. In this case, we are able to get a shell via *winrm* with the password we obtained by cracking the *ntlmv2* hash for the automate user.
+
+>[!TIP]
+>Always try credentials you have obtained with different services and login forms since password reuse is still common
+
+`sudo evilwinrm -u Automate -p '<REDACTED>' -i 10.10.238.231`
+
+![winrm1](/images/37.png)
+
+![winrm2](/images/38.png)
