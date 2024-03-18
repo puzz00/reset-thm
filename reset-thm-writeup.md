@@ -345,3 +345,35 @@ Remembering that *winrm* is running on the machine, we can try the cracked hash 
 ![winrm1](/images/37.png)
 
 ![winrm2](/images/38.png)
+
+## manual enumeration using powershell
+
+At this point, we can enumerate the victim machine manually using **powershell** rather than relying on **bloodhound** We will look for interesting active directory rights.
+
+>[!WARNING]
+>Powershell syntax is ugly - *real* ugly!!!
+
+The first step is to find active directory users who have **delegation privileges** - we can use the following command.
+
+```powershell=
+Get-ADUser -LDAPFilter '(!userAccountControl:1.2.840.113556.1.4.803:=2)' -Properties msds-allowedtodelegateto | Where-Object msda-allowedtodelegateto
+```
+
+![manual1](/images/39.png)
+
+As a part of our attack, we want to know who the **domain admins** are. We can find them using the following command.
+
+```powershell=
+Get-ADGroup 'Domain Admins' | Get-ADGroupMember
+```
+
+![manual2](/images/40.png)
+
+We already know that the **haystack** machine is a domain controller, but if we did not know about the machine the victim user can delegate to, we could find out using **powershell**.
+
+```powershell=
+$target = get-adcomputer HayStack
+
+Get-ADPrincipalGroupMembership $target.distinguishedname
+```
+![manual3](/images/41.png)
