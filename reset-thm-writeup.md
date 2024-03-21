@@ -377,3 +377,14 @@ $target = get-adcomputer HayStack
 Get-ADPrincipalGroupMembership $target.distinguishedname
 ```
 ![manual3](/images/41.png)
+
+### manual enumeration of access control lists
+
+Moving on, we would now want to enumerate access control lists to find interesting rights relating to DARLA_WINTERS. We could use:
+
+```powershell=
+(Get-Acl "AD:$((Get-ADUser DARLA_WINTERS).distinguishedName)").access | ? {$_.ActiveDirectoryRights -match "GenericAll|GenericWrite|ExtendedRight|AllExtendedRights"} | select IdentityReference,ObjectType,ActiveDirectoryRights -Unique
+```
+
+![manual4](/images/42.png)
+
