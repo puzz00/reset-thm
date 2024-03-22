@@ -388,3 +388,34 @@ Moving on, we would now want to enumerate access control lists to find interesti
 
 ![manual4](/images/42.png)
 
+The CRUZ_HALL user has *GenericAll* rights over DARLA_WINTERS which is already more than enough since we could use this to pwn DARLA_WINTERS if we could pwn CRUZ_HALL but there is also an interesting GUID for an ObjectType which CRUZ_HALL has the *ExtendedRight* for. We need to find the text value for the GUID. We can do this in several steps...
+
+```powershell=
+$ObjectTypeGUID = @{}
+```
+```powershell=
+(Get-ADObject -SearchBase (Get-ADRootDSE).SchemaNamingContext -LDAPFilter '(SchemaIDGUID=*)' -Properties Name, SchemaIDGUID).ForEach({$ObjectTypeGUID.Add([GUID]$_.SchemaIDGUID,$_.Name)})
+```
+
+```powershell=
+(Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).ConfigurationNamingContext)" -LDAPFilter '(ObjectClass=ControlAccessRight)' -Properties Name, RightsGUID).ForEach({$ObjectTypeGUID.Add([GUID]$_.RightsGUID,$_.Name)})
+```
+
+```powershell=
+$ObjectTypeGUID | Format-Table -AutoSize
+```
+
+```powershell=
+$ObjectTypeGUID[[GUID]'28630ebf-41d5-11d1-a9c1-0000f80367c1']
+```
+
+Yes, a lot of ugly syntax, but it shows us that the *ObjectType* is *User-Force-Change-Password*
+
+![manual5](/images/43.png)
+
+![manual6](/images/44.png)
+
+![manual7](/images/45.png)
+
+We can now repeat this process of enumerating users with a focus on interesting access control entries relating to them by changing the name used in our earlier command.
+
