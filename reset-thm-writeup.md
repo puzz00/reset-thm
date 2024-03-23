@@ -348,12 +348,12 @@ Remembering that *winrm* is running on the machine, we can try the cracked hash 
 
 ## manual enumeration using powershell
 
-At this point, we can enumerate the victim machine manually using **powershell** rather than relying on **bloodhound** We will look for interesting active directory rights.
+At this point, we can enumerate the victim machine manually using *powershell* rather than relying on *bloodhound* We will look for interesting active directory rights.
 
 >[!WARNING]
 >Powershell syntax is ugly - *real* ugly!!!
 
-The first step is to find active directory users who have **delegation privileges** - we can use the following command.
+The first step is to find active directory users who have *delegation privileges* - we can use the following command.
 
 ```powershell=
 Get-ADUser -LDAPFilter '(!userAccountControl:1.2.840.113556.1.4.803:=2)' -Properties msds-allowedtodelegateto | Where-Object msda-allowedtodelegateto
@@ -361,7 +361,7 @@ Get-ADUser -LDAPFilter '(!userAccountControl:1.2.840.113556.1.4.803:=2)' -Proper
 
 ![manual1](/images/39.png)
 
-As a part of our attack, we want to know who the **domain admins** are. We can find them using the following command.
+As a part of our attack, we want to know who the *domain admins* are. We can find them using the following command.
 
 ```powershell=
 Get-ADGroup 'Domain Admins' | Get-ADGroupMember
@@ -369,7 +369,7 @@ Get-ADGroup 'Domain Admins' | Get-ADGroupMember
 
 ![manual2](/images/40.png)
 
-We already know that the **haystack** machine is a domain controller, but if we did not know about the machine the victim user can delegate to, we could find out using **powershell**.
+We already know that the *haystack* machine is a domain controller, but if we did not know about the machine the victim user can delegate to, we could find out using *powershell*.
 
 ```powershell=
 $target = get-adcomputer HayStack
@@ -419,3 +419,34 @@ Yes, a lot of ugly syntax, but it shows us that the *ObjectType* is *User-Force-
 
 We can now repeat this process of enumerating users with a focus on interesting access control entries relating to them by changing the name used in our earlier command.
 
+```powershell=
+(Get-Acl "AD:$((Get-ADUser CRUZ_HALL).distinguishedName)").access | ? {$_.ActiveDirectoryRights -match "GenericAll|GenericWrite|ExtendedRight|AllExtendedRights"} | select IdentityReference,ObjectType,ActiveDirectoryRights -Unique
+```
+
+![manual8](/images/46.png)
+
+```powershell=
+(Get-Acl "AD:$((Get-ADUser TRACY_CARVER).distinguishedName)").access | ? {$_.ActiveDirectoryRights -match "GenericAll|GenericWrite|ExtendedRight|AllExtendedRights"} | select IdentityReference,ObjectType,ActiveDirectoryRights -Unique
+```
+
+![manual9](/images/47.png)
+
+```powershell=
+(Get-Acl "AD:$((Get-ADUser SHAWNA_BRAY).distinguishedName)").access | ? {$_.ActiveDirectoryRights -match "GenericAll|GenericWrite|ExtendedRight|AllExtendedRights"} | select IdentityReference,ObjectType,ActiveDirectoryRights -Unique
+```
+
+![manual10](/images/48.png)
+
+We eventually :clock1: get to the end of this enumeration.
+
+```powershell=
+(Get-Acl "AD:$((Get-ADUser TABATHA_BRITT).distinguishedName)").access | ? {$_.ActiveDirectoryRights -match "GenericAll|GenericWrite|ExtendedRight|AllExtendedRights"} | select IdentityReference,ObjectType,ActiveDirectoryRights -Unique
+```
+
+![manual11](/images/50.png)
+
+Of course, bloodhound does the heavy-lifting 🏋️ quickly and efficiently, but I always find it fun to do things more manually, too.
+
+In conclusion, I enjoyed this box, especially because I could practise attacking a domain controller and I really liked the inclusion of the automate user!
+
+Thanks to [thm](https://tryhackme.com) and [l4m3r8](https://tryhackme.com/p/l4m3r8) for creating it - and thank you to *you* for reading my writeup of it :fist:
